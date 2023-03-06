@@ -65,6 +65,28 @@ const drawCells = () => {
   ctx.stroke();
 }
 
+const draw = () => {
+  drawGrid();
+  drawCells();
+}
+
+canvas.addEventListener("click", event => {
+  const boundingRect = canvas.getBoundingClientRect();
+
+  const scaleX = canvas.width / boundingRect.width;
+  const scaleY = canvas.height / boundingRect.height;
+
+  const canvasLeft = (event.clientX - boundingRect.left) * scaleX;
+  const canvasTop = (event.clientY - boundingRect.top) * scaleY;
+
+  const row = Math.min(Math.floor(canvasTop / (CELL_SIZE + 1)), height - 1);
+  const col = Math.min(Math.floor(canvasLeft / (CELL_SIZE + 1)), width - 1);
+
+  universe.toggle_cell(row, col);
+
+  draw();
+})
+
 let animationId = null;
 
 const isPaused = () => {
@@ -96,12 +118,10 @@ playPauseButton.addEventListener("click", _ => {
 const renderLoop = () => {
   universe.tick();
 
-  drawGrid();
-  drawCells();
+  draw();
 
   animationId = requestAnimationFrame(renderLoop);
 };
 
-drawGrid();
-drawCells();
+draw();
 play();
